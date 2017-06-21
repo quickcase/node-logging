@@ -1,0 +1,28 @@
+{
+  "name": "nodejs-logging",
+  "version": "1.1.0",
+  "description": "",
+  "main": "Logger.js",
+  "scripts": {
+    "test": "LOG_LEVEL=OFF mocha test/unit/* --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:hmcts/nodejs-logging.git"
+  },
+  "author": "HMCTS",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "log4js": "^1.1.0",
+    "moment": "^2.17.1",
+    "on-finished": "~2.3.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "sinon": "^1.17.7",
+    "sinon-chai": "^2.8.0",
+    "supertest": "1.1.0"
+  }
+}
