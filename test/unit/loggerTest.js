@@ -28,10 +28,10 @@ describe('Logging within the Node.js application', () => {
       myLogger.config(undefined);
     });
 
-    it('should throw an Error', () => {
+    it('should never throw an Error', () => {
       expect(() => {
         logger.info({});
-      }).to.throw(Error, 'Please set a user config object');
+      }).to.not.throw;
     });
 
   });

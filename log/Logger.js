@@ -5,7 +5,7 @@ const levels = logging.log4js.levels;
 
 let singleton = Symbol();
 let singletonEnforcer = Symbol();
-let userConfig;
+let userConfig = {};
 
 class Logger {
 
@@ -70,7 +70,7 @@ class Logger {
   }
 
   static config(config) {
-    userConfig = config;
+    userConfig = config || {};
   }
 
   //----------------------------------------------------
@@ -82,14 +82,9 @@ class Logger {
     logEntry.timestamp = moment().format(logging.timestampFormat);
     const level = logEntry.level.toLowerCase();
 
-    // Set user defined properties
-    if(!userConfig) {
-        throw new Error('Please set a user config object');
-    }
-
-    logEntry.microservice = userConfig.microservice;
-    logEntry.team = userConfig.team;
-    logEntry.environment = userConfig.environment;
+    logEntry.microservice = userConfig.microservice || 'not-configured';
+    logEntry.team = userConfig.team || 'not-configured';
+    logEntry.environment = userConfig.environment || 'not-configured';
 
     if (logging.output === outputTypes.single) {
       this.logger[level](JSON.stringify(logEntry));
