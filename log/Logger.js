@@ -3,8 +3,6 @@ const moment = require('moment');
 const {logging, outputTypes} = require('./config');
 const levels = logging.log4js.levels;
 
-let singleton = Symbol();
-let singletonEnforcer = Symbol();
 let userConfig = {};
 
 class Logger {
@@ -13,10 +11,7 @@ class Logger {
   // Public functions
   //----------------------------------------------------
 
-  constructor(enforcer) {
-    if (enforcer != singletonEnforcer) {
-      throw new Error('Cannot construct Logger singleton, use the static getLogger() function');
-    }
+  constructor() {
   }
 
   trace(logEntry) {
@@ -60,13 +55,11 @@ class Logger {
   //----------------------------------------------------
 
   static getLogger(name) {
-    if (!this[singleton]) {
-      this[singleton] = new Logger(singletonEnforcer);
-    }
-    this[singleton].logger = logging.log4js.getLogger(name);
-    this[singleton].logger.setLevel(logging.currentLevel);
+    const logger = new Logger();
+    logger.logger = logging.log4js.getLogger(name);
+    logger.logger.setLevel(logging.currentLevel);
 
-    return this[singleton];
+    return logger;
   }
 
   static config(config) {
