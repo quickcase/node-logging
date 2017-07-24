@@ -282,16 +282,10 @@ describe('Logging within the Node.js application', () => {
       loggerInstance3 = Logger.getLogger('test3');
     });
 
-    it('should only create a single instance', () => {
-      expect(loggerInstance1).to.deep.equal(loggerInstance2);
-      expect(loggerInstance2).to.deep.equal(loggerInstance3);
-      expect(loggerInstance3).to.deep.equal(loggerInstance1);
-    });
-
-    it('should throw an Error', () => {
-      expect(() => {
-        new Logger();
-      }).to.throw(Error, 'Cannot construct Logger singleton, use the static getLogger() function');
+    it('should create multiple instances', () => {
+      expect(loggerInstance1).to.not.equal(loggerInstance2);
+      expect(loggerInstance2).to.not.equal(loggerInstance3);
+      expect(loggerInstance3).to.not.equal(loggerInstance1);
     });
 
   });
