@@ -13,40 +13,40 @@
 yarn add @hmcts/nodejs-logging
 ```
 
-~~~~
+```
 // Require it
 const logging = require('nodejs-logging');
-~~~~
+```
 
-~~~~
+```
 // Set this config only once
 logging.config({ 
     microservice: 'your-service-name', 
     team: 'YOURTEAM'
     environment: 'some-environemnt'
 });
-~~~~
+```
 
-~~~~
+```
 // Get your logger
 logger = logging.getLogger('app.js');
-~~~~
+```
 
-~~~~
+```
 // Get logging
   logger.info({
     message: 'Yay, logging!'
   });
-~~~~
+```
 
 Optionally you can use the built in express.js access logger.
 
-~~~~
+```
 app.use(logging.express.accessLogger());
-~~~
+```
 
 A typical HTTP 404 log error when encountering an error would look like the following.
-~~~~
+```
 {
   responseCode: 404,
   message: 'Not Found',
@@ -62,11 +62,11 @@ A typical HTTP 404 log error when encountering an error would look like the foll
   team: 'YOURTEAM',
   timestamp: '2017-01-27T11:27:23+00:00'
 }
-~~~~
+```
 
 #### Units Tests
 
-~~~~
+```
 yarn test
-~~~~
+```
 
