@@ -2,7 +2,7 @@
 /* global describe, it, beforeEach */
 
 const expect = require('chai').expect;
-const _ = require('lodash');
+const cloneDeep = require('lodash.clonedeep');
 
 const defaultLogEntry = require('../../log/config').logging.defaultLogEntry;
 const Logger = require('../../log/Logger');
@@ -15,7 +15,7 @@ Logger.config({
 
 describe('Logger default log entry', () => {
   const logger = Logger.getLogger('logEntryTest');
-  const defaultLogEntryClone = _.cloneDeep(defaultLogEntry);
+  const defaultLogEntryClone = cloneDeep(defaultLogEntry);
 
   const logEntry = {
       level: 'TRACE',

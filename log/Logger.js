@@ -1,4 +1,4 @@
-const _ = require('lodash');
+const merge = require('lodash.merge');
 const moment = require('moment');
 const {logging, outputTypes} = require('./config');
 const levels = logging.log4js.levels;
@@ -57,7 +57,6 @@ class Logger {
   static getLogger(name) {
     const logger = new Logger();
     logger.logger = logging.log4js.getLogger(name);
-    logger.logger.setLevel(logging.currentLevel);
 
     return logger;
   }
@@ -71,7 +70,7 @@ class Logger {
   //----------------------------------------------------
 
   _log(logEntry) {
-    logEntry = _.merge({ }, logging.defaultLogEntry, logEntry);
+    logEntry = merge({ }, logging.defaultLogEntry, logEntry);
     logEntry.timestamp = moment().format(logging.timestampFormat);
     const level = logEntry.level.toLowerCase();
 

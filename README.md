@@ -1,5 +1,7 @@
 ## Logging
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/hmcts/nodejs-logging.svg)](https://greenkeeper.io/)
+
 * There are 8 log levels: ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL and OFF.
 * A level can be set via an environment variable LOG_LEVEL, the default is**info**.
 * There are 2 types of logging output which is set via an environment variable LOG_OUTPUT, the default is**single**.

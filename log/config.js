@@ -10,17 +10,17 @@ const outputTypes = {
 const nodejs = 'nodejs';
 
 log4js.configure({
-  appenders: [
-    {
+  appenders: {
+    console: {
       type: 'console',
       layout: {
         type: 'pattern',
         pattern: process.env.LOG_OUTPUT === outputTypes.multi ? "%n%m" : "%m"
       }
-    },
-  ],
-  replaceConsole: true
-});
+    }
+  },
+  categories: { default: { appenders: ['console'], level: 'info' } }
+})
 
 const logging = {
 
