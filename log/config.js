@@ -19,7 +19,7 @@ log4js.configure({
       }
     }
   },
-  categories: { default: { appenders: ['console'], level: 'info' } }
+  categories: { default: { appenders: ['console'], level: process.env.LOG_LEVEL || log4js.levels.INFO } }
 })
 
 const logging = {
@@ -41,12 +41,6 @@ const logging = {
   },
 
   timestampFormat: 'YYYY-MM-DDTHH:mm:ssZ',
-
-  //  ---------------------------------------
-  //      log4js - log levels
-  //  ---------------------------------------
-  //  ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL, OFF
-  currentLevel: process.env.LOG_LEVEL || log4js.levels.INFO,
 
   // "single": view JSON logs on a single line - this setting should be used for production.
   // "multi": view JSON logs over multiple lines - helpful during development.
