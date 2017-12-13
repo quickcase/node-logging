@@ -1,12 +1,12 @@
 'use strict'
 
-const {expect, sinon} = require('../chai-sinon');
+const { expect, sinon } = require('../chai-sinon');
 const express = require('../../log/express');
+const { REQUEST_ID_HEADER, ORIGIN_REQUEST_ID_HEADER, ROOT_REQUEST_ID_HEADER } = require('../../log/tracing/headers')
 const http = require('http');
 const request = require('supertest');
 
 describe('Express.js application logging', () => {
-
   let myLogger, logger;
 
   const CONFIG = {
@@ -18,23 +18,6 @@ describe('Express.js application logging', () => {
   beforeEach(() => {
     myLogger = require('../../log/Logger');
     myLogger.config(CONFIG);
-  });
-
-  describe('integration', () => {
-
-    it('should log a successful request on / with the default logger', () => {
-      let middleware = express.accessLogger();
-      let info = sinon.spy(myLogger.getLogger('express.access'), 'info');
-      request(createServer(middleware))
-        .get('/')
-        .expect(200, (err, res, req) => {
-          expect(info).to.have.been.calledWith(sinon.match({
-            responseCode: 200,
-            message: '"GET / HTTP/1.1" 200',
-          }));
-        });
-    });
-
   });
 
   describe('unit', () => {
@@ -53,11 +36,10 @@ describe('Express.js application logging', () => {
     });
 
     describe('logging', () => {
-
       it('should log a successful request on /', (done) => {
         request(createServer(middleware))
           .get('/')
-          .expect(200, (err, res, req) => {
+          .expect(200, () => {
             expect(logger.info).to.have.been.calledWith(sinon.match({
               responseCode: 200,
               message: '"GET / HTTP/1.1" 200',
@@ -69,7 +51,7 @@ describe('Express.js application logging', () => {
       it('should log a successful request on /foo', (done) => {
         request(createServer(middleware))
           .get('/foo')
-          .expect(200, (err, res, req) => {
+          .expect(200, () => {
             expect(logger.info).to.have.been.calledWith(sinon.match({
               responseCode: 200,
               message: '"GET /foo HTTP/1.1" 200',
@@ -81,7 +63,7 @@ describe('Express.js application logging', () => {
       it('should log a 400 on /', (done) => {
         request(createServer(middleware, {statusCode: 400}))
           .get('/')
-          .expect(400, (err, res, req) => {
+          .expect(400, () => {
             expect(logger.warn).to.have.been.calledWith(sinon.match({
               responseCode: 400,
               message: '"GET / HTTP/1.1" 400',
@@ -93,7 +75,7 @@ describe('Express.js application logging', () => {
       it('should log a 500 on /', (done) => {
         request(createServer(middleware, {statusCode: 500}))
           .get('/')
-          .expect(500, (err, res, req) => {
+          .expect(500, () => {
             expect(logger.error).to.have.been.calledWith(sinon.match({
               responseCode: 500,
               message: '"GET / HTTP/1.1" 500',
@@ -107,7 +89,7 @@ describe('Express.js application logging', () => {
       it('should use user provided formatter', (done) => {
         middleware = express.accessLogger({
           logger: logger,
-          formatter: (req, res) => {
+          formatter: () => {
             return "my format"
           }
         });
@@ -125,7 +107,7 @@ describe('Express.js application logging', () => {
         middleware = express.accessLogger({
           logger: logger,
           level: (logger, req, res) => {
-            if (res.statusCode == 200) {
+            if (res.statusCode === 200) {
               return logger.error;
             }
           }
@@ -140,14 +122,44 @@ describe('Express.js application logging', () => {
       });
     });
 
+    describe('request tracing headers', () => {
+      let req
+
+      beforeEach(() => {
+        const headers = { }
+        headers[REQUEST_ID_HEADER] = 'test-request-id'
+        headers[ORIGIN_REQUEST_ID_HEADER] = 'test-origin-request-id'
+        headers[ROOT_REQUEST_ID_HEADER] = 'test-root-request-id'
+        req = {
+          headers: headers
+        }
+      })
+
+      it('should log request tracing headers', (done) => {
+        request(createServer(middleware, { req: req }))
+          .get('/')
+          .expect(200, () => {
+            expect(logger.info).to.have.been.calledWith(sinon.match({
+              responseCode: 200,
+              message: '"GET / HTTP/1.1" 200',
+              requestId: 'test-request-id',
+              originRequestId: 'test-origin-request-id',
+              rootRequestId: 'test-root-request-id'
+            }));
+            done()
+          });
+      })
+    })
   });
 });
 
-function createServer (logger, config={}) {
+function createServer (middleware, config = { }) {
   return http.createServer(function onRequest (req, res) {
-
-    logger(req, res, function onNext (err) {
+    middleware(req, res, function onNext (err) {
       // allow req, res alterations
+      if (config.req && config.req.headers) {
+        req.headers = { ...req.headers, ...config.req.headers }
+      }
       if (err) {
         res.statusCode = 500
         res.end(err.message)

@@ -1,6 +1,6 @@
 const merge = require('lodash.merge');
 const moment = require('moment');
-const {logging, outputTypes} = require('./config');
+const { logging, outputTypes } = require('./config');
 const levels = logging.log4js.levels;
 
 let userConfig = {};
@@ -98,10 +98,6 @@ class Logger {
       return message;
     }
   }
-
-}
-
-class Config {
 
 }
 
