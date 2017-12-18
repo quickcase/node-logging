@@ -23,6 +23,15 @@ function notUUID (uuidString) {
   return !UUID_REGEX.test(uuidString)
 }
 
+function getHeaderValue (headerName) {
+  const initialRequest = RequestTracing.getInitialRequest()
+  if (initialRequest) {
+    return initialRequest.headers[headerName]
+  } else {
+    return undefined
+  }
+}
+
 class RequestTracing {
   static middleware (req, res, next) {
     if (tracingHeadersNotPresentOrInvalid(req)) {
@@ -35,12 +44,16 @@ class RequestTracing {
     return LocalStorage.retrieveInitialRequest()
   }
 
+  static getOriginRequestId () {
+    return getHeaderValue(ORIGIN_REQUEST_ID_HEADER)
+  }
+
   static getRootRequestId () {
-    return RequestTracing.getInitialRequest().headers[ROOT_REQUEST_ID_HEADER]
+    return getHeaderValue(ROOT_REQUEST_ID_HEADER)
   }
 
   static getCurrentRequestId () {
-    return RequestTracing.getInitialRequest().headers[REQUEST_ID_HEADER]
+    return getHeaderValue(REQUEST_ID_HEADER)
   }
 
   static createNextRequestId () {

@@ -1,5 +1,5 @@
 'use strict'
-/* global describe, context, it, beforeEach */
+/* global describe, context, it, beforeEach, afterEach */
 
 const uuid = require('uuid')
 
@@ -157,8 +157,22 @@ describe('RequestTracing', () => {
     it(`should return the ${REQUEST_ID_HEADER}`, (done) => {
       function createNextFunction (done) {
         return function () {
-          const rootRequestId = RequestTracing.getCurrentRequestId()
-          expect(rootRequestId).to.equal(req.headers[REQUEST_ID_HEADER])
+          const requestId = RequestTracing.getCurrentRequestId()
+          expect(requestId).to.equal(req.headers[REQUEST_ID_HEADER])
+          done()
+        }
+      }
+
+      RequestTracing.middleware(req, req, createNextFunction(done))
+    })
+  })
+
+  describe('getOriginRequestId', () => {
+    it(`should return the ${ORIGIN_REQUEST_ID_HEADER}`, (done) => {
+      function createNextFunction (done) {
+        return function () {
+          const originRequestId = RequestTracing.getOriginRequestId()
+          expect(originRequestId).to.equal(req.headers[ORIGIN_REQUEST_ID_HEADER])
           done()
         }
       }
@@ -171,6 +185,57 @@ describe('RequestTracing', () => {
     it('should return a UUID value', () => {
       const nextRequestId = RequestTracing.createNextRequestId()
       expect(nextRequestId).to.match(UUID_REGEX)
+    })
+  })
+
+  context('when initial request is undefined', () => {
+    let sinonSandbox
+
+    beforeEach(() => {
+      sinonSandbox = sinon.sandbox.create()
+      sinonSandbox.stub(RequestTracing, 'getInitialRequest').callsFake(() => {
+        return undefined
+      })
+    })
+
+    afterEach(() => {
+      sinonSandbox.restore()
+    })
+
+    it('should return undefined root request id', (done) => {
+      function createNextFunction (done) {
+        return function () {
+          const rootRequestId = RequestTracing.getRootRequestId()
+          expect(rootRequestId).to.be.undefined
+          done()
+        }
+      }
+
+      RequestTracing.middleware(req, req, createNextFunction(done))
+    })
+
+    it('should return undefined current request id', (done) => {
+      function createNextFunction (done) {
+        return function () {
+          const requestId = RequestTracing.getCurrentRequestId()
+          expect(requestId).to.be.undefined
+          done()
+        }
+      }
+
+      RequestTracing.middleware(req, req, createNextFunction(done))
+    })
+
+    it('should return undefined origin request id', (done) => {
+      function createNextFunction (done) {
+        return function () {
+          const originRequestId = RequestTracing.getOriginRequestId()
+          expect(originRequestId).to.be.undefined
+          done()
+        }
+      }
+
+      RequestTracing.middleware(req, req, createNextFunction(done))
     })
   })
 })
