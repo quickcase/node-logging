@@ -1,7 +1,8 @@
 'use strict'
-/* global beforeEach, describe, it */
+/* global beforeEach, before, after, describe, it */
 
-const {expect, sinon} = require('../chai-sinon');
+const RequestTracing = require('../../log/tracing/requestTracing')
+const { expect, sinon } = require('../chai-sinon');
 const logging = require('../../log/config').logging;
 const defaultLogEntry = logging.defaultLogEntry;
 const LEVELS = require('log4js').levels;
@@ -166,6 +167,45 @@ describe('Logging within the Node.js application', () => {
     });
 
   });
+
+  describe('Adding request IDs taken from local storage', () => {
+    let sinonSandbox
+    const testRequestId = 'test-request-id'
+    const testRootRequestId = 'test-root-request-id'
+    const testOriginRequestId = 'test-origin-request-id'
+
+    before(() => {
+      sinonSandbox = sinon.sandbox.create()
+      sinonSandbox.stub(RequestTracing, 'getCurrentRequestId').callsFake(() => {
+        return testRequestId
+      })
+      sinonSandbox.stub(RequestTracing, 'getRootRequestId').callsFake(() => {
+        return testRootRequestId
+      })
+      sinonSandbox.stub(RequestTracing, 'getOriginRequestId').callsFake(() => {
+        return testOriginRequestId
+      })
+    })
+
+    after(() => {
+      sinonSandbox.restore()
+    })
+
+    it('should take current request ID from local storage', () => {
+      const logged = logger.info('testing')
+      expect(logged.requestId).to.equal(testRequestId)
+    })
+
+    it('should take root request ID from local storage', () => {
+      const logged = logger.info('testing')
+      expect(logged.rootRequestId).to.equal(testRootRequestId)
+    })
+
+    it('should take origin request ID from local storage', () => {
+      const logged = logger.info('testing')
+      expect(logged.originRequestId).to.equal(testOriginRequestId)
+    })
+  })
 
   describe('Logging an event at a given level', () => {
 

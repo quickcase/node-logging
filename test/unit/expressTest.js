@@ -134,21 +134,6 @@ describe('Express.js application logging', () => {
           headers: headers
         }
       })
-
-      it('should log request tracing headers', (done) => {
-        request(createServer(middleware, { req: req }))
-          .get('/')
-          .expect(200, () => {
-            expect(logger.info).to.have.been.calledWith(sinon.match({
-              responseCode: 200,
-              message: '"GET / HTTP/1.1" 200',
-              requestId: 'test-request-id',
-              originRequestId: 'test-origin-request-id',
-              rootRequestId: 'test-root-request-id'
-            }));
-            done()
-          });
-      })
     })
   });
 });

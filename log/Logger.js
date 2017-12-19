@@ -3,7 +3,13 @@ const moment = require('moment');
 const { logging, outputTypes } = require('./config');
 const levels = logging.log4js.levels;
 
+const RequestTracing = require('./tracing/requestTracing');
+
 let userConfig = {};
+
+function isBlank (str) {
+  return !str || str.trim().length === 0;
+}
 
 class Logger {
 
@@ -71,6 +77,7 @@ class Logger {
 
   _log(logEntry) {
     logEntry = merge({ }, logging.defaultLogEntry, logEntry);
+    this._addTracingInformation(logEntry)
     logEntry.timestamp = moment().format(logging.timestampFormat);
     const level = logEntry.level.toLowerCase();
 
@@ -88,6 +95,18 @@ class Logger {
 
     return logEntry;
   };
+
+  _addTracingInformation (logEntry) {
+    if (isBlank(logEntry.requestId)) {
+      logEntry.requestId = RequestTracing.getCurrentRequestId() || logging.defaultLogEntry.requestId;
+    }
+    if (isBlank(logEntry.originRequestId)) {
+      logEntry.originRequestId = RequestTracing.getOriginRequestId() || logging.defaultLogEntry.originRequestId;
+    }
+    if (isBlank(logEntry.rootRequestId)) {
+      logEntry.rootRequestId = RequestTracing.getRootRequestId() || logging.defaultLogEntry.rootRequestId;
+    }
+  }
 
   _wrap(message) {
     if (typeof message === 'string') {
