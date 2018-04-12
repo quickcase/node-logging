@@ -2,22 +2,14 @@
 
 const { expect, sinon } = require('../chai-sinon');
 const express = require('../../log/express');
-const { REQUEST_ID_HEADER, ORIGIN_REQUEST_ID_HEADER, ROOT_REQUEST_ID_HEADER } = require('../../log/tracing/headers')
 const http = require('http');
 const request = require('supertest');
 
 describe('Express.js application logging', () => {
   let myLogger, logger;
 
-  const CONFIG = {
-    microservice: 'track-your-appeal',
-    team: 'SSCS',
-    environment: 'production'
-  };
-
   beforeEach(() => {
     myLogger = require('../../log/Logger');
-    myLogger.config(CONFIG);
   });
 
   describe('unit', () => {
