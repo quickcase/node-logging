@@ -23,7 +23,7 @@
     "lodash.clonedeep": "^4.5.0",
     "mocha": "^6.2.0",
     "sinon": "^4.0.2",
-    "sinon-chai": "^2.8.0",
+    "sinon-chai": "^3.3.0",
     "supertest": "4.0.2",
     "winston-spy": "^0.2.0"
   }
