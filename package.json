@@ -1,17 +1,21 @@
 {
-  "name": "@hmcts/nodejs-logging",
+  "name": "@quickcase/node-logging",
   "version": "3.0.2",
-  "description": "",
-  "main": "Logger.js",
+  "description": "NodeJS logging component for QuickCase applications",
+  "main": "index.js",
   "scripts": {
     "test": "LOG_LEVEL=OFF mocha test/unit/* --reporter spec"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:hmcts/nodejs-logging.git"
+    "url": "git@github.com:quickcase/node-logging.git"
   },
-  "author": "HMCTS",
+  "author": "QuickCase",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/quickcase/node-logging/issues"
+  },
+  "homepage": "https://github.com/quickcase/node-logging#readme",
   "dependencies": {
     "moment": "^2.19.3",
     "on-finished": "^2.3.0",
