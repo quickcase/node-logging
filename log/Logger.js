@@ -8,6 +8,7 @@ const NPM_LOG_LEVEL_MAP = {
   error: 'error',
   warn: 'warn',
   info: 'info',
+  http: 'http',
   debug: 'debug',
   trace: 'verbose'
 }
@@ -54,14 +55,22 @@ const logFormat = () => {
  *   stack: error stack trace if any
  * e.g.
  * {
- *   "level":"info",
- *   "timestamp":"2021-01-14T11:40:54.859Z",
- *   "message":"Hello World { hello: 'world' }",
- *   "moduleName":"loggerTest",
+ *   "level": "info",
+ *   "timestamp": "2021-01-14T11:40:54.859Z",
+ *   "message": "Hello World { hello: 'world' }",
+ *   "name": "loggerTest",
  *   "stack": "Error: ...."
  * }
  */
 const logger = createLogger({
+  levels: {
+    error: 0,
+    warn: 1,
+    info: 2,
+    http: 3,
+    debug: 4,
+    verbose: 5
+  },
   level: logLevel(),
   format: format.combine(
     timestamp(),

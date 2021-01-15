@@ -52,6 +52,22 @@ describe('Logging within the Node.js application', () => {
         verify('verbose');
       });
 
+      it('should log a message for DEBUG', () => {
+        spyTransport.level = 'debug';
+        logger.debug(testMessage, testMeta);
+
+        expect(spy).calledOnce;
+        verify('debug');
+      });
+
+      it('should log a message for HTTP', () => {
+        spyTransport.level = 'http';
+        logger.http(testMessage, testMeta);
+
+        expect(spy).calledOnce;
+        verify('http');
+      });
+
       it('should log a message for INFO', () => {
         logger.info(testMessage, testMeta);
 
