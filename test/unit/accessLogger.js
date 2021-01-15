@@ -2,13 +2,13 @@
 
 const expect = require('chai').expect
 
-const AccessLogger = require('../../log/express').AccessLoggingHandler
-const Logger = require('../../log/Logger')
+const AccessLogger = require('../../log/express').AccessLoggingHandler;
+const logger = require('../../log/Logger')('express.access');
 
 describe('AccessLogger', () => {
   it('should have a default logger', () => {
     const accessLogger = new AccessLogger()
-    expect(accessLogger.logger).to.be.eq(Logger.getLogger('express.access'))
+    expect(accessLogger.logger).to.eql(logger)
   })
 
   it('should have a default formatter', () => {

@@ -1,145 +1,141 @@
 'use strict'
 /* global beforeEach, before, after, describe, it */
 
-const { expect, assert, sinon } = require('../chai-sinon')
-const spyLogger = require('winston-spy')
-const winston = require('winston')
+const {expect, sinon} = require('../chai-sinon');
+const util = require('util');
+const SpyTransport = require('./spyTransport');
 
-const myLogger = require('../../log/Logger')
-
+const logger = require('../../log/Logger')('test');
 
 describe('Logging within the Node.js application', () => {
+  let spy;
+  const testMessage = 'Hello World';
+  const testMeta = {hello: 'world'};
+
+  const verify = (level) => {
+    expect(spy).calledWith(sinon.match.has('level', level));
+    expect(spy).calledWith(sinon.match.has('timestamp'));
+    expect(spy).calledWith(sinon.match.has('name', 'test'));
+    expect(spy).calledWith(sinon.match.has('message', testMessage + util.inspect(testMeta)));
+  };
 
   describe('Logging an event at a given level', () => {
 
-    const testMessage = 'Hello World'
-    const testMeta = { hello: 'world' }
-    let logger
-    let i = 0
-    let spy
+    let spyTransport;
 
     beforeEach(() => {
-      logger = myLogger.getLogger('test' + i++)
-      logger.remove(winston.transports.Console)
-      spy = sinon.spy()
-    })
+      spy = sinon.spy();
+      spyTransport = new SpyTransport({spy, level: 'info'});
+      logger.add(spyTransport);
+    });
 
     afterEach(() => {
-      logger.remove(spyLogger)
-    })
+      logger.remove(spyTransport);
+    });
 
-    context('when logger default level is DEBUG', () => {
+    context('when logger default level is INFO', () => {
       beforeEach(() => {
-        logger.add(spyLogger, { level: 'debug', spy: spy })
-      })
+        spyTransport.level = 'info';
+      });
 
-      it('should not log a message for SILLY', () => {
-        logger.silly(testMessage, testMeta)
+      it('should not log a message for VERBOSE', () => {
+        logger.verbose(testMessage, testMeta);
 
-        assert(spy.notCalled)
-      })
+        expect(spy).not.called;
+      });
 
       it('should log a message for VERBOSE', () => {
-        logger.verbose(testMessage, testMeta)
+        spyTransport.level = 'verbose';
+        logger.verbose(testMessage, testMeta);
 
-        assert(spy.calledOnce)
-        assert(spy.calledWith('verbose', testMessage, testMeta))
-      })
+        expect(spy).calledOnce;
+        verify('verbose');
+      });
 
       it('should log a message for INFO', () => {
-        logger.info(testMessage, testMeta)
+        logger.info(testMessage, testMeta);
 
-        assert(spy.calledOnce)
-        assert(spy.calledWith('info', testMessage, testMeta))
-      })
+        expect(spy).calledOnce;
+        verify('info');
+      });
 
       it('should log a message for WARN', () => {
-        logger.warn(testMessage, testMeta)
+        logger.warn(testMessage, testMeta);
 
-        assert(spy.calledOnce)
-        assert(spy.calledWith('warn', testMessage, testMeta))
+        expect(spy).calledOnce;
+        verify('warn');
       })
 
       it('should log a message for ERROR', () => {
-        logger.error(testMessage, testMeta)
+        logger.error(testMessage, testMeta);
 
-        assert(spy.calledOnce)
-        assert(spy.calledWith('error', testMessage, testMeta))
+        expect(spy).calledOnce;
+        verify('error');
       })
     })
 
     context('when logger default level matches level used to log the message', () => {
-      it('should log a message at level SILLY', () => {
-        logger.add(spyLogger, { level: 'silly', spy: spy })
-
-        logger.silly(testMessage, testMeta)
-
-        assert(spy.calledOnce)
-        assert(spy.calledWith('silly', testMessage, testMeta))
-      })
-
       it('should log a message at level DEBUG', () => {
-        logger.add(spyLogger, { level: 'debug', spy: spy })
+        spyTransport.level = 'debug';
 
         logger.debug(testMessage, testMeta)
 
-        assert(spy.calledOnce)
-        assert(spy.calledWith('debug', testMessage, testMeta))
+        expect(spy).calledOnce;
+        verify('debug');
       })
 
       it('should log a message at level VERBOSE', () => {
-        logger.add(spyLogger, { level: 'verbose', spy: spy })
+        spyTransport.level = 'verbose';
 
-        logger.verbose(testMessage, testMeta)
+        logger.verbose(testMessage, testMeta);
 
-        assert(spy.calledOnce)
-        assert(spy.calledWith('verbose', testMessage, testMeta))
+        expect(spy).calledOnce;
+        verify('verbose');
       })
 
       it('should log a message at level INFO', () => {
-        logger.add(spyLogger, { level: 'info', spy: spy })
+        spyTransport.level = 'info';
 
         logger.info(testMessage, testMeta)
 
-        assert(spy.calledOnce)
-        assert(spy.calledWith('info', testMessage, testMeta))
+        expect(spy).calledOnce;
+        verify('info');
       })
 
       it('should log a message at level WARN', () => {
-        logger.add(spyLogger, { level: 'warn', spy: spy })
+        spyTransport.level = 'warn';
 
         logger.warn(testMessage, testMeta)
 
-        assert(spy.calledOnce)
-        assert(spy.calledWith('warn', testMessage, testMeta))
+        expect(spy).calledOnce;
+        verify('warn');
       })
 
       it('should log a message at level ERROR', () => {
-        logger.add(spyLogger, { level: 'error', spy: spy })
+        spyTransport.level = 'error';
 
         logger.error(testMessage, testMeta)
 
-        assert(spy.calledOnce)
-        assert(spy.calledWith('error', testMessage, testMeta))
-      })
-    })
-  })
+        expect(spy).calledOnce;
+        verify('error');
+      });
+    });
+  });
 
   describe('Obtaining a single instance of Logger', () => {
-
-    let Logger, loggerInstance1, loggerInstance2, loggerInstance3
+    let loggerInstance1, loggerInstance2, loggerInstance3
 
     beforeEach(() => {
-      Logger = require('../../log/Logger')
-      loggerInstance1 = Logger.getLogger('test1')
-      loggerInstance2 = Logger.getLogger('test2')
-      loggerInstance3 = Logger.getLogger('test3')
+      loggerInstance1 = require('../../log/Logger')('test1')
+      loggerInstance2 = require('../../log/Logger')('test2')
+      loggerInstance3 = require('../../log/Logger')('test3')
     })
 
     it('should create multiple instances', () => {
       expect(loggerInstance1).to.not.equal(loggerInstance2)
       expect(loggerInstance2).to.not.equal(loggerInstance3)
       expect(loggerInstance3).to.not.equal(loggerInstance1)
-    })
-  })
-})
+    });
+  });
+
+});
