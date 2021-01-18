@@ -75,7 +75,7 @@ const logger = createLogger({
   format: format.combine(
     timestamp(),
     splat(),
-    metadata({fillExcept: ['level', 'timestamp', 'message', 'name', 'stack']}),
+    metadata({fillExcept: ['level', 'timestamp', 'message', 'name', 'responseCode', 'stack']}),
     customMessageFormat(),
     errors({stack: true}),
     logFormat()
