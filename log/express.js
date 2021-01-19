@@ -1,7 +1,7 @@
 'use strict'
 
 const onFinished = require('on-finished');
-const logger = require('./Logger')('express.access');
+const logger = require('./logger')('express.access');
 
 class AccessLogger {
   constructor(config = { }) {

@@ -9,7 +9,7 @@ describe('Express.js application logging', () => {
   let myLogger, logger;
 
   beforeEach(() => {
-    myLogger = require('../../log/Logger');
+    myLogger = require('../../log/logger');
   });
 
   describe('unit', () => {

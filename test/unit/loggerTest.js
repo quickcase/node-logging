@@ -5,7 +5,7 @@ const {expect, sinon} = require('../chai-sinon');
 const util = require('util');
 const SpyTransport = require('./spyTransport');
 
-const logger = require('../../log/Logger')('test');
+const logger = require('../../log/logger')('test');
 
 describe('Logging within the Node.js application', () => {
   let spy;
@@ -142,9 +142,9 @@ describe('Logging within the Node.js application', () => {
     let loggerInstance1, loggerInstance2, loggerInstance3
 
     beforeEach(() => {
-      loggerInstance1 = require('../../log/Logger')('test1')
-      loggerInstance2 = require('../../log/Logger')('test2')
-      loggerInstance3 = require('../../log/Logger')('test3')
+      loggerInstance1 = require('../../log/logger')('test1')
+      loggerInstance2 = require('../../log/logger')('test2')
+      loggerInstance3 = require('../../log/logger')('test3')
     })
 
     it('should create multiple instances', () => {

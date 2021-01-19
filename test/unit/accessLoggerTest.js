@@ -3,7 +3,7 @@
 const {expect, sinon} = require('../chai-sinon');
 
 const AccessLogger = require('../../log/express').AccessLoggingHandler;
-const logger = require('../../log/Logger')('express.access');
+const logger = require('../../log/logger')('express.access');
 const SpyTransport = require('./spyTransport');
 
 describe('AccessLogger', () => {
