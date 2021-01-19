@@ -1,6 +1,6 @@
 {
   "name": "@quickcase/node-logging",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "NodeJS logging component for QuickCase applications",
   "main": "index.js",
   "scripts": {
