@@ -15,7 +15,7 @@ describe('Logging within the Node.js application', () => {
   const verify = (level) => {
     expect(spy).calledWith(sinon.match.has('level', level));
     expect(spy).calledWith(sinon.match.has('timestamp'));
-    expect(spy).calledWith(sinon.match.has('name', 'test'));
+    expect(spy).calledWith(sinon.match.has('logger_name', 'test'));
     expect(spy).calledWith(sinon.match.has('message', testMessage + util.inspect(testMeta)));
   };
 
@@ -130,10 +130,18 @@ describe('Logging within the Node.js application', () => {
       it('should log a message at level ERROR', () => {
         spyTransport.level = 'error';
 
-        logger.error(testMessage, testMeta)
+        try {
+          throw new Error('test error');
+        } catch (err) {
+          logger.error('Error:', err);
+        }
 
         expect(spy).calledOnce;
-        verify('error');
+        expect(spy).calledWith(sinon.match.has('level', 'error'));
+        expect(spy).calledWith(sinon.match.has('timestamp'));
+        expect(spy).calledWith(sinon.match.has('logger_name', 'test'));
+        expect(spy).calledWith(sinon.match.has('message', 'Error: test error'));
+        expect(spy).calledWith(sinon.match.has('exception', sinon.match('test error')));
       });
     });
   });

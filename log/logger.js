@@ -14,7 +14,7 @@ const NPM_LOG_LEVEL_MAP = {
 }
 
 const customMessageFormat = format((info) => {
-  const {message: infoMsg, metadata, ...otherInfo} = info;
+  const {message: infoMsg, metadata, stack, ...otherInfo} = info;
   let message = infoMsg;
   if (metadata && typeof metadata === 'object' && Object.keys(metadata).length) {
     message = message + util.inspect(metadata);
@@ -22,6 +22,7 @@ const customMessageFormat = format((info) => {
 
   return {
     message,
+    exception: stack,
     ...otherInfo
   };
 });
@@ -38,8 +39,8 @@ const logFormat = () => {
     case 'prettyprint':
       return prettyPrint();
     case 'printf':
-      return printf(({timestamp, level, message, name, stack}) => {
-        return `${timestamp} [${level}] : [${name}] ${message} ${stack ? '\n' + stack : ''}`;
+      return printf(({timestamp, level, message, logger_name, exception}) => {
+        return `${timestamp} [${level}] : [${logger_name}] ${message} ${exception ? '\n' + exception : ''}`;
       });
     default:
       return json();
@@ -50,16 +51,16 @@ const logFormat = () => {
  * This logger outputs the logs in json format with fields
  *   level: log level,
  *   timestamp: timestamp the message was received,
- *   moduleName: name of the module/file logging the message,
+ *   logger_name: name of the module/file logging the message,
  *   message: logger statement with dynamic data,
- *   stack: error stack trace if any
+ *   exception: error stack trace if any
  * e.g.
  * {
  *   "level": "info",
  *   "timestamp": "2021-01-14T11:40:54.859Z",
  *   "message": "Hello World { hello: 'world' }",
- *   "name": "loggerTest",
- *   "stack": "Error: ...."
+ *   "logger_name": "loggerTest",
+ *   "exception": "Error: ...."
  * }
  */
 const logger = createLogger({
@@ -75,9 +76,9 @@ const logger = createLogger({
   format: format.combine(
     timestamp(),
     splat(),
-    metadata({fillExcept: ['level', 'timestamp', 'message', 'name', 'responseCode', 'stack']}),
-    customMessageFormat(),
+    metadata({fillExcept: ['level', 'timestamp', 'message', 'logger_name', 'responseCode', 'stack']}),
     errors({stack: true}),
+    customMessageFormat(),
     logFormat()
   ),
   transports: [
@@ -87,4 +88,4 @@ const logger = createLogger({
   exitOnError: false
 });
 
-module.exports = (name) => logger.child({name});
+module.exports = (logger_name) => logger.child({logger_name});
