@@ -33,7 +33,7 @@ describe('Express.js application logging', () => {
           .get('/')
           .expect(200, () => {
             expect(logger.info).to.have.been.calledWith(sinon.match({
-              responseCode: 200,
+              response_code: 200,
               message: '"GET / HTTP/1.1" 200',
             }));
             done()
@@ -45,7 +45,7 @@ describe('Express.js application logging', () => {
           .get('/foo')
           .expect(200, () => {
             expect(logger.info).to.have.been.calledWith(sinon.match({
-              responseCode: 200,
+              response_code: 200,
               message: '"GET /foo HTTP/1.1" 200',
             }));
             done()
@@ -57,7 +57,7 @@ describe('Express.js application logging', () => {
           .get('/')
           .expect(400, () => {
             expect(logger.warn).to.have.been.calledWith(sinon.match({
-              responseCode: 400,
+              response_code: 400,
               message: '"GET / HTTP/1.1" 400',
             }));
             done();
@@ -69,7 +69,7 @@ describe('Express.js application logging', () => {
           .get('/')
           .expect(500, () => {
             expect(logger.error).to.have.been.calledWith(sinon.match({
-              responseCode: 500,
+              response_code: 500,
               message: '"GET / HTTP/1.1" 500',
             }));
             done();

@@ -35,7 +35,7 @@ describe('AccessLogger', () => {
     expect(spy).calledWith(sinon.match.has('level', 'info'));
     expect(spy).calledWith(sinon.match.has('timestamp'));
     expect(spy).calledWith(sinon.match.has('logger_name', 'express.access'));
-    expect(spy).calledWith(sinon.match.has('responseCode', 200));
+    expect(spy).calledWith(sinon.match.has('response_code', 200));
     expect(spy).calledWith(sinon.match.has('message', '"GET /api/test HTTP/1.1" 200'));
   });
 

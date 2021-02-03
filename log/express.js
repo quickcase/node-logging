@@ -25,7 +25,7 @@ class AccessLogger {
   log(req, res) {
     const level = this.level(req, res);
     level.call(this.logger, {
-      responseCode: res.statusCode,
+      response_code: res.statusCode,
       message: this.formatter(req, res)
     });
   }
